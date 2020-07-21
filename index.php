@@ -15,6 +15,7 @@
 	<link rel="stylesheet" type="text/css" href="asset/css/css/all.css">
 	<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap" rel="stylesheet">
 	<script type="text/javascript" src="asset/js/jquery-3.4.1.min.js"></script>
+
 	<title>Detector landing page</title>
 </head>
 <body>
@@ -42,14 +43,13 @@
 			          	<!-- desktop view  for form-->
 			          	<div class="col-md-12">
 			          		<h6 class="mt-2">Never be lied to again! Get notified when we launch</h6>
-			          		<?php echo errorMessage(); 
-			          		      echo successMessage(); 
-			          		?>
-			          		<form id="form" class="mt-3" action="process.php" method="post">
+			          		<div id="errorMsg"></div>
+			          		<form class="form" class="mt-3" action="process.php" method="post">
 			          			<div class="row">
 			          				<div class="col-md-12 col-12 d-flex">
-				          				<input type="email" name="email" id="input-js" class="custom-input" placeholder="Enter your email address...">
-				          				<button id="btn" type="submit" name="submit" href="#" class="custom-btn custom-btn__2 text-center">SUBSCRIBE NOW</button>
+				          				<input id="input" type="email" name="email" id="input-js" class="custom-input" placeholder="Enter your email address...">
+				          				<input type="hidden" name="submit">
+				          				<input id="btn" type="submit" name="submit" href="#" class="custom-btn custom-btn__2 text-center">
 			          				</div>
 			          			</div>
 			          		</form>
@@ -416,8 +416,42 @@
 	  	}
 	  } ,false)
 
-	  
+	  	$(document).ready(function() {
+	  		$(".form").on("submit",function(e) {
+	  			e.preventDefault();
+	  			// alert("The jquery is working!")
+	  			$.ajax({
+	  			  url:"process.php",
+	  			  method:"POST",
+	  			  data: new FormData(this),
+	  			  contentType: false,
+	  			  processData: false,
+	  			  success:function(data){
+	  			    if (data == "Email can't be empty" || data == "Invalid email" || data == "Email already exist, use another one" || data == "Couldn't send email, something went wrong") {
+	  			      $("#errorMsg").html(`<div  id="error" class="alert alert-danger ">${data}</div>`);
+	  			      $(".form")[0].reset()
+	  			      $("#input").focus(function () {
+	  				      if ($("#error").css("display", "block")) {
+	  				      		$("#error").css("display", "none")
+	  				      }
+	  			      })
+	  			    
+	  			    }else{
+	  			      $("#errorMsg").html(`<div  id="error" class="alert alert-success ">${data}</div>`);
+	  			      $(".form")[0].reset()
+	  			    }
+	  			  }
+	  			})
+
+	        $("#input").focus(function () {
+	        	// console.log("its working");
+	        	$("#error").hide();
+	        })
+	  		})
+	  	})
 	</script>
+
+
 
 
 
@@ -427,7 +461,7 @@
 
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-	<script type="text/javascript" src="asset/js/jquery-3.3.1.slim.min.js"></script>
+	<!-- <script type="text/javascript" src="asset/js/jquery-3.3.1.slim.min.js"></script> -->
 	<script type="text/javascript" src="asset/js/popper.min.js"></script>
 	<script type="text/javascript" src="asset/js/bootstrap.min.js"></script>
 </body>
